@@ -1,0 +1,272 @@
+[
+  {
+    "scene_id": "场景2",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nScene: 舞台中央布置一张方桌，两侧各置一椅，桌上摆放茶具。背景是一幅大气的山水画，营造出雅致的谈话氛围。. Audio: ambient sounds: 偶有风声、虫鸣声, background music: 轻柔的琵琶背景音乐\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，神采飞扬) 孙悟空 performs: [一个\"筋斗\"翻至台中，手搭凉棚，作\"瞭望\"身段，随后轻轻落地，朝诸葛亮拱手一礼，神情中透出几分调皮与自信。]",
+    "emotion": "机敏活泼，神采飞扬",
+    "type": "动作",
+    "turn": 2,
+    "raw_text": "[一个\"筋斗\"翻至台中，手搭凉棚，作\"瞭望\"身段，随后轻轻落地，朝诸葛亮拱手一礼，神情中透出几分调皮与自信。]"
+  },
+  {
+    "scene_id": "场景3",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nScene: 舞台中央布置一张长桌，上面摆放卷轴和棋盘，桌后是诸葛亮端坐思考。对面是孙悟空，神情坚定，营造出智勇对决的氛围。. Audio: ambient sounds: 偶有风声、竹叶沙沙声, background music: 古琴与琵琶交织的背景音乐\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (沉稳多谋，气定神闲) 诸葛亮 performs: [轻抚胡须，微微颔首，随后端坐于琴前，手持羽扇，拱手一礼。]",
+    "emotion": "沉稳多谋，气定神闲",
+    "type": "动作",
+    "turn": 3,
+    "raw_text": "[轻抚胡须，微微颔首，随后端坐于琴前，手持羽扇，拱手一礼。]"
+  },
+  {
+    "scene_id": "场景4",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，略带俏皮) 孙悟空 performs: （韵白）今夜与先生共饮，定要论个高下，论个英雄！",
+    "emotion": "机敏活泼，略带俏皮",
+    "type": "念白",
+    "turn": 4,
+    "raw_text": "（韵白）今夜与先生共饮，定要论个高下，论个英雄！"
+  },
+  {
+    "scene_id": "场景5",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (沉思，稳重) 诸葛亮 performs: （韵白）世间英雄，非只力勇者称之，智慧心胸，更为重要。[向孙悟空伸出手，示意共坐畅谈。]",
+    "emotion": "沉思，稳重",
+    "type": "念白",
+    "turn": 5,
+    "raw_text": "（韵白）世间英雄，非只力勇者称之，智慧心胸，更为重要。[向孙悟空伸出手，示意共坐畅谈。]"
+  },
+  {
+    "scene_id": "场景6",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，思索间带有俏皮) 孙悟空 performs: [孙悟空随即坐下，双手托腮，目光中透出一丝期待与好奇，准备倾听诸葛亮的高论。]",
+    "emotion": "机敏活泼，思索间带有俏皮",
+    "type": "动作",
+    "turn": 6,
+    "raw_text": "[孙悟空随即坐下，双手托腮，目光中透出一丝期待与好奇，准备倾听诸葛亮的高论。]"
+  },
+  {
+    "scene_id": "场景7",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (温文尔雅，谦逊自如) 诸葛亮 performs: （韵白）正所谓，智者不惑，勇者不惧。且听我一言，愿为兄长解疑释惑，共探这英雄之道。[轻轻抬手，示意孙悟空细听，面露淡然微笑。]",
+    "emotion": "温文尔雅，谦逊自如",
+    "type": "念白",
+    "turn": 7,
+    "raw_text": "（韵白）正所谓，智者不惑，勇者不惧。且听我一言，愿为兄长解疑释惑，共探这英雄之道。[轻轻抬手，示意孙悟空细听，面露淡然微笑。]"
+  },
+  {
+    "scene_id": "场景8",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (思索中带有敬佩，情感充沛) 孙悟空 performs: [孙悟空站起，双手合十，微微向诸葛亮行礼，随后缓缓坐下，神情专注，目光中流露出钦佩与求知若渴之意。]",
+    "emotion": "思索中带有敬佩，情感充沛",
+    "type": "动作",
+    "turn": 8,
+    "raw_text": "[孙悟空站起，双手合十，微微向诸葛亮行礼，随后缓缓坐下，神情专注，目光中流露出钦佩与求知若渴之意。]"
+  },
+  {
+    "scene_id": "场景9",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (从容不迫，渊博自信) 诸葛亮 performs: （韵白）智者以静制动，勇者以动制静，然两者结合，方能无往不利。且容我细细道来。【做】[轻轻起身，微微向前，示意将继续深入探讨，气度雍容。]",
+    "emotion": "从容不迫，渊博自信",
+    "type": "念白",
+    "turn": 9,
+    "raw_text": "（韵白）智者以静制动，勇者以动制静，然两者结合，方能无往不利。且容我细细道来。【做】[轻轻起身，微微向前，示意将继续深入探讨，气度雍容。]"
+  },
+  {
+    "scene_id": "场景10",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，专注聆听) 孙悟空 performs: （韵白）听先生一席话，胜读十年书。请继续赐教，老孙洗耳恭听。【做】[拱手一礼，面带诚恳的微笑，神情间充满敬意。]",
+    "emotion": "机敏活泼，专注聆听",
+    "type": "念白",
+    "turn": 10,
+    "raw_text": "（韵白）听先生一席话，胜读十年书。请继续赐教，老孙洗耳恭听。【做】[拱手一礼，面带诚恳的微笑，神情间充满敬意。]"
+  },
+  {
+    "scene_id": "场景11",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (谦和从容，智慧满怀) 诸葛亮 performs: （韵白）天下之事，纷繁复杂，然以智慧为舟，以勇气为帆，方能乘风破浪。愿与君携手，共谋大计。【做】[缓缓坐下，示意孙悟空安心倾听，面露温雅微笑。]",
+    "emotion": "谦和从容，智慧满怀",
+    "type": "念白",
+    "turn": 11,
+    "raw_text": "（韵白）天下之事，纷繁复杂，然以智慧为舟，以勇气为帆，方能乘风破浪。愿与君携手，共谋大计。【做】[缓缓坐下，示意孙悟空安心倾听，面露温雅微笑。]"
+  },
+  {
+    "scene_id": "场景13",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，自信满满) 孙悟空 performs: （韵白）先生且说，何人为英雄？【做】[伸手示意，眼中闪烁着智慧的光芒，神情间流露出无与伦比的活力与好奇。]",
+    "emotion": "机敏活泼，自信满满",
+    "type": "念白",
+    "turn": 13,
+    "raw_text": "（韵白）先生且说，何人为英雄？【做】[伸手示意，眼中闪烁着智慧的光芒，神情间流露出无与伦比的活力与好奇。]"
+  },
+  {
+    "scene_id": "场景14",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (智慧深沉，风度翩翩) 诸葛亮 performs: （韵白）英雄者，皆在于大智若愚，大勇若怯，方能成就一番伟业。【做】[抬手示意与孙悟空共论，神情间透出深邃的智慧光芒。]",
+    "emotion": "智慧深沉，风度翩翩",
+    "type": "念白",
+    "turn": 14,
+    "raw_text": "（韵白）英雄者，皆在于大智若愚，大勇若怯，方能成就一番伟业。【做】[抬手示意与孙悟空共论，神情间透出深邃的智慧光芒。]"
+  },
+  {
+    "scene_id": "场景15",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，敬佩中带有求知) 孙悟空 performs: [轻轻鼓掌以示赞同，随后伸手示意，邀请诸葛亮继续分享高见，面带期待的微笑。]",
+    "emotion": "机敏活泼，敬佩中带有求知",
+    "type": "动作",
+    "turn": 15,
+    "raw_text": "[轻轻鼓掌以示赞同，随后伸手示意，邀请诸葛亮继续分享高见，面带期待的微笑。]"
+  },
+  {
+    "scene_id": "场景16",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (温文儒雅，博学自信) 诸葛亮 performs: （韵白）愿与君共行此道，探讨古今，博采众长，以成就大业。【做】[轻轻敲击桌面，以示对话继续，眼神坚定，充满智慧与远见。]",
+    "emotion": "温文儒雅，博学自信",
+    "type": "念白",
+    "turn": 16,
+    "raw_text": "（韵白）愿与君共行此道，探讨古今，博采众长，以成就大业。【做】[轻轻敲击桌面，以示对话继续，眼神坚定，充满智慧与远见。]"
+  },
+  {
+    "scene_id": "场景17",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，敬佩中带有思索) 孙悟空 performs: [孙悟空双手拱手行礼，面露敬佩与期盼的微笑，神情间透出对智慧的渴求。]",
+    "emotion": "机敏活泼，敬佩中带有思索",
+    "type": "动作",
+    "turn": 17,
+    "raw_text": "[孙悟空双手拱手行礼，面露敬佩与期盼的微笑，神情间透出对智慧的渴求。]"
+  },
+  {
+    "scene_id": "场景18",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (从容大度，智者风范) 诸葛亮 performs: （韵白）古今英雄事，皆在于智慧与勇气相辅相成，愿与君携手共探，共创辉煌。【做】[轻轻点头示意，面露慈和微笑，神情中充满对未来的期许与信心。]",
+    "emotion": "从容大度，智者风范",
+    "type": "念白",
+    "turn": 18,
+    "raw_text": "（韵白）古今英雄事，皆在于智慧与勇气相辅相成，愿与君携手共探，共创辉煌。【做】[轻轻点头示意，面露慈和微笑，神情中充满对未来的期许与信心。]"
+  },
+  {
+    "scene_id": "场景19",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，情感充沛) 孙悟空 performs: [孙悟空起身，作拱手礼，神情间充满敬意与期待，随后缓缓坐下，眼中流露出对智慧的渴求与求知的热诚。]",
+    "emotion": "机敏活泼，情感充沛",
+    "type": "动作",
+    "turn": 19,
+    "raw_text": "[孙悟空起身，作拱手礼，神情间充满敬意与期待，随后缓缓坐下，眼中流露出对智慧的渴求与求知的热诚。]"
+  },
+  {
+    "scene_id": "场景20",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (谦逊而从容，智者风范) 诸葛亮 performs: （韵白）愿以吾之所学，助君行稳致远，成就一番壮丽伟业。【做】[面带温雅微笑，与孙悟空目光交汇，神情间充满对未来的信心与期待。]",
+    "emotion": "谦逊而从容，智者风范",
+    "type": "念白",
+    "turn": 20,
+    "raw_text": "（韵白）愿以吾之所学，助君行稳致远，成就一番壮丽伟业。【做】[面带温雅微笑，与孙悟空目光交汇，神情间充满对未来的信心与期待。]"
+  },
+  {
+    "scene_id": "场景21",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，充满敬意) 孙悟空 performs: [孙悟空轻轻敲击桌面，以示对话的继续，目光中充满坚定与期待。]",
+    "emotion": "机敏活泼，充满敬意",
+    "type": "动作",
+    "turn": 21,
+    "raw_text": "[孙悟空轻轻敲击桌面，以示对话的继续，目光中充满坚定与期待。]"
+  },
+  {
+    "scene_id": "场景22",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (温文尔雅，谦逊从容) 诸葛亮 performs: （韵白）愿未来之路，我们共同探索，互助互勉，以成就不凡之事业。【做】[轻轻点头示意，与孙悟空目光交汇，神情中充满对未来的信心与期待。]",
+    "emotion": "温文尔雅，谦逊从容",
+    "type": "念白",
+    "turn": 22,
+    "raw_text": "（韵白）愿未来之路，我们共同探索，互助互勉，以成就不凡之事业。【做】[轻轻点头示意，与孙悟空目光交汇，神情中充满对未来的信心与期待。]"
+  },
+  {
+    "scene_id": "场景24",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，挑战中带有谦敬) 孙悟空 performs: [孙悟空微微颔首，向诸葛亮作拱手礼，表示敬意，神情间充满了期待与好奇。]",
+    "emotion": "机敏活泼，挑战中带有谦敬",
+    "type": "动作",
+    "turn": 24,
+    "raw_text": "[孙悟空微微颔首，向诸葛亮作拱手礼，表示敬意，神情间充满了期待与好奇。]"
+  },
+  {
+    "scene_id": "场景25",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (智勇兼备，风度翩翩) 诸葛亮 performs: （韵白）请君随我，且看这智勇交锋，如何演绎出英雄的真谛。【做】[手中羽扇轻轻一挥，示意孙悟空随行，神情间充满了从容与自信。]",
+    "emotion": "智勇兼备，风度翩翩",
+    "type": "念白",
+    "turn": 25,
+    "raw_text": "（韵白）请君随我，且看这智勇交锋，如何演绎出英雄的真谛。【做】[手中羽扇轻轻一挥，示意孙悟空随行，神情间充满了从容与自信。]"
+  },
+  {
+    "scene_id": "场景26",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，跃跃欲试) 孙悟空 performs: [孙悟空微微颔首，再次拱手作礼，神情间透出对即将到来的挑战的期待与信心。]",
+    "emotion": "机敏活泼，跃跃欲试",
+    "type": "动作",
+    "turn": 26,
+    "raw_text": "[孙悟空微微颔首，再次拱手作礼，神情间透出对即将到来的挑战的期待与信心。]"
+  },
+  {
+    "scene_id": "场景27",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (智者风范，胸有成竹) 诸葛亮 performs: （韵白）请君入此阵中，观其变化，且看如何运用智勇，化险为夷。【做】[手中羽扇轻轻一指，示意孙悟空进入阵中，目光中透出鼓励与期待。]",
+    "emotion": "智者风范，胸有成竹",
+    "type": "念白",
+    "turn": 27,
+    "raw_text": "（韵白）请君入此阵中，观其变化，且看如何运用智勇，化险为夷。【做】[手中羽扇轻轻一指，示意孙悟空进入阵中，目光中透出鼓励与期待。]"
+  },
+  {
+    "scene_id": "场景28",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，胸有成竹) 孙悟空 performs: [微微颔首，向诸葛亮拱手作礼，随后大步走入阵中，目光坚定，神情间透出无畏与坚毅。]",
+    "emotion": "机敏活泼，胸有成竹",
+    "type": "动作",
+    "turn": 28,
+    "raw_text": "[微微颔首，向诸葛亮拱手作礼，随后大步走入阵中，目光坚定，神情间透出无畏与坚毅。]"
+  },
+  {
+    "scene_id": "场景29",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (从容不迫，智者风范) 诸葛亮 performs: （韵白）愿君于阵中，见证智勇合一之妙，成就真英雄之道。【做】[目光坚定，紧随其后，注视孙悟空的表现，神情中充满信任与期待。]",
+    "emotion": "从容不迫，智者风范",
+    "type": "念白",
+    "turn": 29,
+    "raw_text": "（韵白）愿君于阵中，见证智勇合一之妙，成就真英雄之道。【做】[目光坚定，紧随其后，注视孙悟空的表现，神情中充满信任与期待。]"
+  },
+  {
+    "scene_id": "场景30",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (自信坚定，挑战中带有敬意) 孙悟空 performs: [孙悟空微微颔首，再次拱手作礼，随后大步迈入阵中，目光中流露出无畏与决心。]",
+    "emotion": "自信坚定，挑战中带有敬意",
+    "type": "动作",
+    "turn": 30,
+    "raw_text": "[孙悟空微微颔首，再次拱手作礼，随后大步迈入阵中，目光中流露出无畏与决心。]"
+  },
+  {
+    "scene_id": "场景31",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (从容自信，智者风范) 诸葛亮 performs: （韵白）愿君于此阵中，探得智勇之真谛，成就英雄之名，望君凯旋归来。【做】[手中羽扇轻轻一指，示意孙悟空，神情中充满期待与信任。]",
+    "emotion": "从容自信，智者风范",
+    "type": "念白",
+    "turn": 31,
+    "raw_text": "（韵白）愿君于此阵中，探得智勇之真谛，成就英雄之名，望君凯旋归来。【做】[手中羽扇轻轻一指，示意孙悟空，神情中充满期待与信任。]"
+  },
+  {
+    "scene_id": "场景32",
+    "character": "孙悟空",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 孙悟空 - 武生 role type. Face: 金色猴脸，经典倒栽桃心脸谱，红色心形勾勒眼、鼻、嘴，眼窝涂金，脸颊有红色桃形图案，整体线条灵动，象征火眼金睛与机敏活泼. Costume: 头戴凤翅紫金冠，配两根长翎子，身穿黄色紧身短打，腰系虎皮裙，足蹬薄底快靴，手持金箍棒，体现齐天大圣的神通与威武. Style: 威武神勇，灵动飘逸，展现齐天大圣的神通广大，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (机敏活泼，满怀信心) 孙悟空 performs: [孙悟空再次拱手作礼，随后大步走入阵中，神情中流露出无畏与勇敢，坚定地踏上挑战之路。]",
+    "emotion": "机敏活泼，满怀信心",
+    "type": "动作",
+    "turn": 32,
+    "raw_text": "[孙悟空再次拱手作礼，随后大步走入阵中，神情中流露出无畏与勇敢，坚定地踏上挑战之路。]"
+  },
+  {
+    "scene_id": "场景33",
+    "character": "诸葛亮",
+    "prompt": "Chinese Peking Opera performance. Traditional theatrical style with elaborate costumes, stylized movements, and cultural authenticity.\n\nCharacter: 诸葛亮 - 老生 role type. Face: 素面为主，无勾画脸谱，象征智慧超群与品行正直. Costume: 头戴纶巾或方巾，身着蓝或紫色八卦衣，绣有太极与八卦图案，外罩同色系鹤氅，手持白色鹅毛扇，腰系丝绦，脚穿白色厚底靴，象征通晓天文地理与神机妙算. Style: 沉稳多谋，睿智从容，展现蜀汉丞相的智勇与德高望重，适合竹林月夜的场景与智慧勇气的对话主题\n\nPerformance: with emotion (智慧从容，满怀期待) 诸葛亮 performs: （韵白）待君凯旋之时，必为英雄之名增光添彩，吾在此静候佳音。【做】[轻轻颔首，手中羽扇轻轻一挥，示意孙悟空继续前行，神情间充满期待与信任。]",
+    "emotion": "智慧从容，满怀期待",
+    "type": "念白",
+    "turn": 33,
+    "raw_text": "（韵白）待君凯旋之时，必为英雄之名增光添彩，吾在此静候佳音。【做】[轻轻颔首，手中羽扇轻轻一挥，示意孙悟空继续前行，神情间充满期待与信任。]"
+  }
+]

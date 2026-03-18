@@ -1,0 +1,4 @@
+OPENAI_API_KEY=sk-UteD2utX3AclJFzG25F97f83520f47249e57F0E3B0B31e85
+OPENAI_API_BASE=https://api.zyai.online/v1/
+GEMINI_API_KEY=your-gemini-api-key-here
+SORA_API_KEY=your-sora-api-key-here

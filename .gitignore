@@ -1,0 +1,33 @@
+# ===== API 密钥 / 敏感配置 =====
+src/config.py
+.env
+*.env
+
+# ===== Python 缓存 =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.pytest_cache/
+
+# ===== 旧备份目录 =====
+vector_index_old_backup/
+origin/
+
+# ===== 临时测试目录 =====
+test_extract/
+error_json/
+
+# ===== IDE / 系统文件 =====
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# ===== 日志文件 =====
+*.log
+
+# ===== 虚拟环境 =====
+venv/
+.venv/
+env/

@@ -1,0 +1,11 @@
+# 智能视频生成系统依赖
+
+# API客户端
+google-generativeai>=0.3.0
+requests>=2.31.0
+
+# 数据处理
+pathlib>=1.0.1
+
+# 日志和工具
+python-dotenv>=1.0.0
