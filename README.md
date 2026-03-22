@@ -14,7 +14,83 @@
 
 1. **数据提取阶段**：从历史京剧剧本（PDF/TXT）中提取结构化角色数据，经 LLM 语义增强后构建角色知识库
 2. **RAG 检索增强阶段**：基于 FAISS 向量索引，为剧本生成提供精准的历史表演片段参考
-3. **多智能体剧本生成阶段**：由导演、编剧、演员、服装设计等多个专业智能体协作，生成完整的定制化京剧剧本
+3. **多智能体剧本生成阶段**：基于 **CrewAI** 框架，由编剧、导演、演员、服装设计师、场景设计师等多个专业智能体协作，生成完整的定制化京剧剧本
+
+---
+
+## 技术架构
+
+### 多Agent框架：CrewAI
+
+系统采用 **CrewAI** 作为多智能体编排框架，实现了以下核心能力：
+
+- **Agent 定义**：每个智能体拥有独立的角色（role）、目标（goal）、背景故事（backstory）和工具集（tools）
+- **Task 驱动**：所有工作以 Task 为单位分配给 Agent，支持顺序执行和委派
+- **Tool 集成**：将 RAG 检索、角色数据加载、剧本格式化等功能封装为 CrewAI Tool，供 Agent 按需调用
+- **记忆系统**：双层记忆架构——滑动窗口短期记忆 + RAG 长期记忆
+
+### 记忆系统
+
+| 记忆类型 | 实现方式 | 用途 |
+|----------|----------|------|
+| **短期记忆** | 滑动窗口（SlidingWindowMemory） | 保留最近 N 轮对话，超出窗口自动摘要压缩 |
+| **长期记忆** | RAG 向量检索（RAGLongTermMemory） | 基于 FAISS 索引检索历史京剧知识 |
+
+### Agent 角色分工
+
+| Agent | 角色 | 职责 | 可委派 |
+|-------|------|------|--------|
+| **编剧 Agent** | 京剧编剧 | 创作剧本大纲、审查服装/场景设计、规划演员行动 | ✅ |
+| **服装设计 Agent** | 京剧服装设计师 | 设计角色服装、脸谱方案，接受编剧审查 | ✅ |
+| **场景设计 Agent** | 京剧场景设计师 | 设计舞台布景、音效方案，接受编剧审查 | ✅ |
+| **演员 Agent** | 京剧演员（动态创建） | 扮演特定角色，生成对话，自我审查 | ✅ |
+| **导演 Agent** | 京剧导演 | 控制对话流程，审查演员表演，最终评估 | ✅ |
+
+### Tool 工具集
+
+| 工具 | 类型 | 功能 |
+|------|------|------|
+| `RAGSearchTool` | RAG | 语义检索历史京剧知识 |
+| `CharacterSceneRetrieveTool` | RAG | 检索角色相关场景片段 |
+| `LoadCharacterProfileTool` | 角色 | 加载角色档案（profile.json） |
+| `LoadCharacterDataTool` | 角色 | 加载角色详细数据（data.json） |
+| `ExtractCharactersTool` | 角色 | 从用户输入中提取角色名 |
+| `ParseJSONTool` | 剧本 | 从 LLM 输出中提取 JSON |
+| `FormatScriptTool` | 剧本 | 格式化京剧剧本文本 |
+
+---
+
+## 创作流程（4 Phase Pipeline）
+
+```
+用户需求输入
+    ↓
+╔══════════════════════════════════════════════════╗
+║  Phase 1: 大纲创作（编剧 Agent 主导）              ║
+║  - 提取角色 → 加载角色档案 → 创作剧本大纲          ║
+╚══════════════════════════════════════════════════╝
+    ↓
+╔══════════════════════════════════════════════════╗
+║  Phase 2: 设计阶段（编剧审查）                     ║
+║  2a. 服装设计 Agent → 编剧审查 → (修改)            ║
+║  2b. 场景设计 Agent → 编剧审查 → (修改)            ║
+╚══════════════════════════════════════════════════╝
+    ↓
+╔══════════════════════════════════════════════════╗
+║  Phase 3: 对话生成（导演控制 + 演员表演）           ║
+║  每场戏循环：                                      ║
+║    编剧规划行动 → 导演选择说话者 →                  ║
+║    演员生成对话(含自审) → 导演审查 → (修改)         ║
+║    → 更新短期记忆 → 下一轮                         ║
+╚══════════════════════════════════════════════════╝
+    ↓
+╔══════════════════════════════════════════════════╗
+║  Phase 4: 最终评估（导演 Agent）                   ║
+║  - 多维度评分 → 生成评估报告                       ║
+╚══════════════════════════════════════════════════╝
+    ↓
+generated_scripts/（完整剧本 + 场景设定 + 装扮设计 + 评估报告）
+```
 
 ---
 
@@ -22,90 +98,59 @@
 
 ```
 .
-├── 流程图.png                    # 系统架构流程图
-├── main.py                       # 🚀 主入口：剧本生成系统启动脚本
-├── src/                          # 核心源代码
+├── main.py                       # 🚀 主入口：CrewAI 剧本生成系统
+├── src/
 │   ├── config.py                 # 全局配置（API密钥、模型参数等）
+│   ├── agents/                   # 🤖 Agent 定义层（CrewAI Agent）
+│   │   ├── __init__.py
+│   │   ├── screenwriter.py       # 编剧 Agent
+│   │   ├── costume_designer.py   # 服装设计 Agent
+│   │   ├── scene_designer.py     # 场景设计 Agent
+│   │   ├── actor.py              # 演员 Agent（动态创建）
+│   │   └── director.py           # 导演 Agent
+│   ├── tools/                    # 🔧 Tool 工具层（CrewAI Tool）
+│   │   ├── __init__.py
+│   │   ├── rag_tools.py          # RAG 检索工具
+│   │   ├── character_tools.py    # 角色数据工具
+│   │   └── script_tools.py       # 剧本处理工具
+│   ├── memory/                   # 🧠 记忆系统
+│   │   ├── __init__.py
+│   │   ├── sliding_window_memory.py  # 滑动窗口短期记忆
+│   │   └── rag_long_term_memory.py   # RAG 长期记忆
+│   ├── crew/                     # 🎬 CrewAI 编排层
+│   │   ├── __init__.py
+│   │   ├── tasks.py              # Task 定义（所有任务模板）
+│   │   └── opera_crew.py         # PekingOperaCrew 主编排类
 │   ├── data_extraction/          # 数据提取模块
-│   │   ├── extractor.py          # PDF/TXT剧本结构化提取
-│   │   ├── llm_client.py         # LLM API客户端
+│   │   ├── extractor.py          # PDF/TXT 剧本结构化提取
+│   │   ├── llm_client.py         # LLM API 客户端
 │   │   ├── data_models.py        # 数据结构定义
 │   │   ├── utils.py              # 工具函数
 │   │   └── main.py               # 数据提取入口
-│   ├── rag_system/               # RAG检索增强模块
+│   ├── rag_system/               # RAG 检索增强模块
 │   │   ├── vector_processor.py   # 文本向量化处理
-│   │   ├── vector_store.py       # FAISS向量存储管理
+│   │   ├── vector_store.py       # FAISS 向量存储管理
 │   │   ├── semantic_retriever.py # 语义相似度检索
 │   │   ├── scene_enhancer.py     # 场景增强器
-│   │   └── main.py               # RAG系统入口
-│   └── script_generation/        # 多智能体剧本生成模块
-│       ├── agent_base.py         # 智能体基类
-│       ├── director_agent.py     # 导演智能体（统筹协调）
-│       ├── screenwriter_agent.py # 编剧智能体（剧情大纲）
-│       ├── actor_agent.py        # 演员智能体（角色对话）
-│       ├── costume_designer_agent.py # 服装设计智能体
-│       ├── scene_setting_agent.py    # 场景设定智能体
-│       ├── dialogue_manager.py   # 多智能体对话管理器
-│       ├── context_builder.py    # 上下文构建器
-│       ├── script_formatter.py   # 剧本格式化输出
-│       └── main.py               # 剧本生成入口
+│   │   └── main.py               # RAG 系统入口
+│   └── script_generation/        # 旧版多智能体模块（已重构为 agents/crew/）
+│       └── README.md             # 模块说明
 ├── scripts/                      # 工具脚本集合
 │   ├── data_collection/          # 数据采集脚本
-│   │   ├── search_bilibili.py
-│   │   └── search_bilibili_batch.py
 │   ├── data_processing/          # 数据处理脚本
-│   │   ├── extract.py
-│   │   ├── process_with_model.py
-│   │   └── process_with_model_batch.py
 │   ├── demo/                     # 功能演示脚本
-│   │   └── demo_scene_setting.py
 │   ├── evaluation/               # 评估与对比脚本
-│   │   ├── compare_scripts.py
-│   │   └── regenerate_script.py
 │   └── tests/                    # 测试脚本
-│       ├── simple_test.py
-│       ├── test_import.py
-│       ├── test_cleaning.py
-│       ├── test_scene_setting.py
-│       └── test_scene_fix.py
-├── pdfdata/                      # 原始PDF剧本（按角色分类）
-│   ├── 孙悟空/
-│   ├── 诸葛亮/
-│   └── 赵匡胤/
-├── txtdata/                      # 原始TXT剧本（按角色分类）
-├── enhanced_script/              # LLM增强后的结构化剧本
-│   ├── 孙悟空/
-│   ├── 诸葛亮/
-│   └── 赵匡胤/
-├── character_data/               # 角色知识库JSON数据
-│   ├── 孙悟空/data.json
-│   └── 诸葛亮/data.json
+├── pdfdata/                      # 原始 PDF 剧本（按角色分类）
+├── txtdata/                      # 原始 TXT 剧本（按角色分类）
+├── enhanced_script/              # LLM 增强后的结构化剧本
+├── character_data/               # 角色知识库 JSON 数据
 ├── character/                    # 角色档案（Profile）
-│   ├── 孙悟空/profile.json
-│   └── 诸葛亮/profile.json
-├── vector_index/                 # FAISS向量索引（当前版本）
-│   ├── faiss.index
-│   └── documents.json
+├── vector_index/                 # FAISS 向量索引
 ├── generated_scripts/            # 系统生成的剧本输出
-│   ├── 煮酒论英雄_剧本.txt
-│   ├── 煮酒论英雄_大纲.json
-│   ├── 煮酒论英雄_场景设定.json
-│   ├── 煮酒论英雄_装扮设计.json
-│   └── 煮酒论英雄_评估报告.json
 ├── example/                      # 示例剧本参考
 ├── doc/                          # 开发文档
-│   ├── RAG改进总结.md
-│   ├── 剧本格式改进说明.md
-│   ├── 场景设定功能说明.md
-│   └── ...
-├── vedio_generation/             # 🎬 视频生成子项目（下游任务）
-│   ├── main.py
-│   ├── run_pipeline.py
-│   ├── src/
-│   ├── scripts/
-│   ├── README.md
-│   └── requirements.txt
-└── src/data_extraction/README.md
+└── vedio_generation/             # 🎬 视频生成子项目（下游任务）
 ```
 
 ---
@@ -129,17 +174,14 @@
 - **检索**：根据当前剧情需求，检索历史相似表演片段
 - **增强**：将检索结果注入剧本生成提示词，提升角色一致性
 
-### 3. 多智能体剧本生成模块 (`src/script_generation/`)
+### 3. CrewAI 多智能体系统 (`src/agents/` + `src/crew/` + `src/tools/` + `src/memory/`)
 
-采用专业化多智能体协作架构：
+采用 CrewAI 框架的专业化多智能体协作架构：
 
-| 智能体 | 职责 |
-|--------|------|
-| `DirectorAgent`（导演） | 统筹全局，协调各智能体，控制剧情走向 |
-| `ScreenwriterAgent`（编剧） | 生成剧情大纲，规划幕次结构 |
-| `ActorAgent`（演员） | 基于角色档案生成个性化对话与唱腔 |
-| `CostumeDesignerAgent`（服装设计） | 设计符合角色身份的服装、头饰、道具 |
-| `SceneSettingAgent`（场景设定） | 规划舞台布景、灯光、音效配置 |
+- **Agent 层** (`src/agents/`)：定义 5 类专业 Agent，每个 Agent 拥有独立的角色设定、目标和工具集
+- **Tool 层** (`src/tools/`)：将 RAG 检索、角色数据加载等功能封装为 CrewAI BaseTool
+- **Memory 层** (`src/memory/`)：双层记忆系统——滑动窗口短期记忆 + RAG 长期记忆
+- **Crew 层** (`src/crew/`)：定义 Task 模板和 PekingOperaCrew 主编排类，实现 4 阶段创作流程
 
 ---
 
@@ -165,7 +207,7 @@ src/rag_system/
         ↓
 vector_index/（FAISS向量索引）
         ↓
-[多智能体剧本生成]
+[CrewAI 多智能体剧本生成]
 python main.py
         ↓
 generated_scripts/（完整剧本 + 场景设定 + 装扮设计 + 评估报告）
@@ -182,32 +224,36 @@ vedio_generation/
 
 ### 环境要求
 
-- Python 3.8+
-- 依赖包见 `vedio_generation/requirements.txt`（视频生成部分）
+- Python 3.10+
+- CrewAI 框架
 - 大语言模型 API（OpenAI / DeepSeek / 其他兼容接口）
 - FAISS（向量检索库）
 
 ### 安装依赖
 
 ```bash
-pip install openai faiss-cpu numpy requests beautifulsoup4
+pip install crewai crewai-tools openai faiss-cpu numpy requests
 ```
 
 ### 配置 API
 
-编辑 `src/config.py`，填入 LLM API 密钥和接口地址：
+复制 `src/config.example.py` 为 `src/config.py`，填入 LLM API 密钥和接口地址：
 
 ```python
-API_KEY = "your_api_key_here"
-API_BASE_URL = "https://api.openai.com/v1"  # 或其他兼容接口
-MODEL_NAME = "gpt-4o"
+class Config:
+    API_KEY = "sk-your_api_key_here"
+    BASE_URL = "https://api.openai.com/v1/"   # 或其他兼容接口地址
+    MODEL_NAME = "gpt-4o"                      # 或 deepseek-chat 等
 ```
 
 ### 运行剧本生成
 
 ```bash
-# 直接运行主程序（交互式输入剧目名称和角色信息）
+# 交互式运行（系统会提示输入创作需求）
 python main.py
+
+# 命令行直接指定需求
+python main.py "请创作一出诸葛亮和孙悟空的京剧"
 ```
 
 ### 完整数据管线（从零开始）
@@ -217,14 +263,11 @@ python main.py
 python scripts/data_processing/extract.py
 python scripts/data_processing/process_with_model_batch.py
 
-# Step 2: 构建RAG向量索引
+# Step 2: 构建 RAG 向量索引
 python src/rag_system/main.py
 
-# Step 3: 生成剧本
+# Step 3: 生成剧本（CrewAI 多Agent协作）
 python main.py
-
-# Step 4: （可选）评估与对比
-python scripts/evaluation/compare_scripts.py
 ```
 
 ---
@@ -238,6 +281,7 @@ python scripts/evaluation/compare_scripts.py
 - `煮酒论英雄_装扮设计.json` — 角色服装、头饰、道具设计
 - `煮酒论英雄_剧本.txt` — 完整剧本（含唱词、念白、身段动作）
 - `煮酒论英雄_评估报告.json` — 生成质量多维评估报告
+- `煮酒论英雄_对话历史.json` — 完整对话历史记录
 
 参考完整剧本示例：`example/煮酒论英雄_完整剧本(1).txt`
 
@@ -274,10 +318,11 @@ python scripts/evaluation/compare_scripts.py
 
 ---
 
-## 技术架构
+## 技术栈
 
+- **多Agent框架**：CrewAI
 - **大语言模型**：OpenAI GPT-4 / DeepSeek（可配置）
 - **向量检索**：FAISS（Facebook AI Similarity Search）
+- **记忆系统**：滑动窗口短期记忆 + RAG 长期记忆
 - **文本处理**：自定义京剧文本清洗与结构化管线
-- **多智能体框架**：自研基于提示词工程的多智能体协作框架
 - **数据格式**：JSON（角色档案/场景配置）+ TXT（剧本正文）

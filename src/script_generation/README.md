@@ -1,267 +1,167 @@
-# 多Agent剧本生成系统
+# 多Agent剧本生成系统（已重构为 CrewAI 架构）
 
-## 概述
+> ⚠️ **注意**：本目录为旧版多Agent剧本生成模块。系统已重构为基于 **CrewAI** 框架的新架构，核心代码已迁移至以下目录：
+>
+> - `src/agents/` — Agent 定义层
+> - `src/tools/` — Tool 工具层
+> - `src/memory/` — 记忆系统
+> - `src/crew/` — CrewAI 编排层
 
-本模块实现了基于多Agent协作的京剧剧本生成系统，通过模拟编剧、导演和演员之间的协作，生成具有京剧艺术特色的剧本。
+---
 
-## 系统架构
+## 新架构概述
 
-### 核心组件
+### 从旧架构到 CrewAI
 
-1. **Agent基类** (`agent_base.py`)
-   - 所有Agent的基础类
-   - 封装LLM客户端和消息管理
-   - 提供统一的消息处理接口
+| 维度 | 旧架构 | 新架构（CrewAI） |
+|------|--------|-----------------|
+| **框架** | 自研提示词工程 | CrewAI 多Agent框架 |
+| **Agent 定义** | 继承 `AgentBase` 类 | CrewAI `Agent`（role/goal/backstory） |
+| **任务分配** | 硬编码流程 | CrewAI `Task` 驱动 |
+| **工具调用** | 内嵌在 Agent 方法中 | CrewAI `BaseTool` 独立封装 |
+| **记忆系统** | 无 | 滑动窗口短期记忆 + RAG 长期记忆 |
+| **审查机制** | 导演单层审查 | 编剧审查设计 + 演员自审 + 导演审查 |
 
-2. **上下文构建器** (`context_builder.py`)
-   - 整合RAG检索和角色数据
-   - 为不同Agent构建专属上下文
-   - 从用户需求中提取角色信息
+### 新架构核心组件
 
-3. **编剧Agent** (`screenwriter_agent.py`)
-   - 生成剧本大纲
-   - 设计场景结构
-   - 规划剧情发展
+#### 1. Agent 层 (`src/agents/`)
 
-4. **演员Agent** (`actor_agent.py`)
-   - 扮演特定角色
-   - 生成符合角色性格的对话
-   - 实时接收其他角色的对话（同步机制）
-   - 输出格式：【情】情感 + 【念/唱/做/打】内容
+| Agent | 文件 | 职责 |
+|-------|------|------|
+| 编剧 Agent | `screenwriter.py` | 创作大纲、审查服装/场景设计、规划演员行动 |
+| 服装设计 Agent | `costume_designer.py` | 设计角色服装和脸谱方案 |
+| 场景设计 Agent | `scene_designer.py` | 设计舞台布景和音效方案 |
+| 演员 Agent | `actor.py` | 扮演特定角色，生成对话，自我审查 |
+| 导演 Agent | `director.py` | 控制对话流程，审查表演，最终评估 |
 
-5. **导演Agent** (`director_agent.py`)
-   - 控制对话流程
-   - 决定下一个说话角色
-   - 评估场景质量
-   - 判断场景是否继续
+每个 Agent 通过 CrewAI 的 `Agent` 类创建，拥有：
+- **role**：角色名称（如"京剧编剧"）
+- **goal**：工作目标
+- **backstory**：详细的角色背景和工作原则
+- **tools**：可调用的工具列表
+- **memory**：启用 CrewAI 内置记忆
 
-6. **对话管理器** (`dialogue_manager.py`)
-   - 管理完整对话历史
-   - 支持按场景、按角色查询
-   - 提供格式化输出
+#### 2. Tool 层 (`src/tools/`)
 
-7. **剧本格式化器** (`script_formatter.py`)
-   - 将对话历史格式化为标准京剧剧本
-   - 生成美观的剧本文档
+将原来内嵌在 Agent 中的功能抽取为独立的 CrewAI Tool：
 
-## 工作流程
+| 工具 | 文件 | 功能 |
+|------|------|------|
+| `RAGSearchTool` | `rag_tools.py` | 语义检索历史京剧知识 |
+| `CharacterSceneRetrieveTool` | `rag_tools.py` | 检索角色相关场景片段 |
+| `LoadCharacterProfileTool` | `character_tools.py` | 加载角色档案 |
+| `LoadCharacterDataTool` | `character_tools.py` | 加载角色详细数据 |
+| `ExtractCharactersTool` | `character_tools.py` | 从用户输入提取角色名 |
+| `ParseJSONTool` | `script_tools.py` | 从 LLM 输出提取 JSON |
+| `FormatScriptTool` | `script_tools.py` | 格式化京剧剧本 |
+
+所有工具继承自 `crewai.tools.BaseTool`，实现 `_run()` 方法。
+
+#### 3. Memory 层 (`src/memory/`)
+
+双层记忆系统：
+
+- **`SlidingWindowMemory`**（短期记忆）
+  - 保留最近 N 条消息（默认 10 条）
+  - 超出窗口的消息自动压缩为摘要
+  - 支持按角色过滤、获取上下文字符串
+
+- **`RAGLongTermMemory`**（长期记忆）
+  - 基于现有 FAISS 向量索引
+  - 支持语义检索和文本匹配两种模式
+  - 提供角色知识摘要接口
+
+#### 4. Crew 层 (`src/crew/`)
+
+- **`tasks.py`**：定义所有 Task 模板（大纲、服装设计、场景设计、行动规划、对话生成、审查、评估等）
+- **`opera_crew.py`**：`PekingOperaCrew` 主编排类，实现 4 阶段创作流程
+
+### 创作流程（4 Phase Pipeline）
 
 ```
-用户需求
-    ↓
-1. 提取角色（从需求中识别角色名称）
-    ↓
-2. 生成大纲（编剧Agent创建剧本结构）
-    ↓
-3. 初始化Agents（为每个角色创建演员Agent）
-    ↓
-4. 生成场景对话（多Agent协作）
-    │
-    ├─→ 演员Agent生成对话
-    │       ↓
-    ├─→ 同步给其他演员（实时通信）
-    │       ↓
-    ├─→ 导演Agent决定下一个说话者
-    │       ↓
-    └─→ 判断是否继续（循环直到场景结束）
-    ↓
-5. 格式化剧本（生成标准格式）
-    ↓
-6. 保存结果（剧本、大纲、对话历史）
+Phase 1: 大纲创作
+  编剧 Agent → 提取角色 → 加载档案 → 创作大纲
+
+Phase 2: 设计阶段
+  2a. 服装设计 Agent → 编剧审查 → (修改)
+  2b. 场景设计 Agent → 编剧审查 → (修改)
+
+Phase 3: 对话生成（逐场景循环）
+  编剧规划行动 → 导演选择说话者 →
+  演员生成对话(含自审) → 导演审查 → (修改) →
+  更新短期记忆 → 下一轮
+
+Phase 4: 最终评估
+  导演 Agent → 多维度评分 → 评估报告
 ```
 
-## 关键特性
+---
 
-### 1. 实时同步机制
+## 旧版模块文件说明
 
-演员Agent每说一句话，都会立即同步给其他演员：
+以下文件为旧版实现，保留供参考：
 
-```python
-# 演员A生成对话
-dialogue_data = actor_a.generate_dialogue(...)
+| 文件 | 说明 | 新版对应 |
+|------|------|----------|
+| `agent_base.py` | Agent 基类 | `src/agents/*.py`（CrewAI Agent） |
+| `director_agent.py` | 导演 Agent | `src/agents/director.py` |
+| `screenwriter_agent.py` | 编剧 Agent | `src/agents/screenwriter.py` |
+| `actor_agent.py` | 演员 Agent | `src/agents/actor.py` |
+| `costume_designer_agent.py` | 服装设计 Agent | `src/agents/costume_designer.py` |
+| `scene_setting_agent.py` | 场景设定 Agent | `src/agents/scene_designer.py` |
+| `dialogue_manager.py` | 对话管理器 | `src/memory/sliding_window_memory.py` |
+| `context_builder.py` | 上下文构建器 | `src/tools/character_tools.py` + `src/tools/rag_tools.py` |
+| `script_formatter.py` | 剧本格式化 | `src/tools/script_tools.py` |
+| `main.py` | 旧版入口 | `src/crew/opera_crew.py` + 根目录 `main.py` |
 
-# 立即同步给演员B
-actor_b.receive_other_dialogue(dialogue_data)
-```
+---
 
-### 2. RAG增强
-
-- 根据用户需求检索相关场景片段
-- 为Agent提供丰富的上下文信息
-- 提升生成内容的京剧特色
-
-### 3. 角色数据整合
-
-- 加载角色profile.json（基本信息）
-- 加载角色data.json（详细数据）
-- 确保生成内容符合角色性格
-
-### 4. 京剧艺术风格
-
-- 唱念做打四功
-- 文言文表达
-- 情感标注
-- 舞台指示
-
-## 使用方法
+## 使用方法（新版）
 
 ### 基本使用
 
 ```python
-from src.script_generation.main import ScriptGenerationSystem
+from src.crew.opera_crew import PekingOperaCrew
 
-# 初始化系统
-system = ScriptGenerationSystem(
-    character_dir="character",
-    character_data_dir="character_data",
-    vector_index_dir="vector_index",
-    output_dir="generated_scripts"
-)
+# 初始化 Crew
+crew = PekingOperaCrew()
 
-# 生成剧本
-result = system.generate_script(
-    user_request="诸葛亮和孙悟空煮酒论英雄",
-    max_scenes=3,
-    max_rounds_per_scene=10
-)
+# 执行完整创作流程
+result = crew.run("请创作一出诸葛亮和孙悟空的京剧")
 
 # 查看结果
-print(f"剧本文件：{result['output_files']['script']}")
-print(f"大纲文件：{result['output_files']['outline']}")
-print(f"对话历史：{result['output_files']['dialogue']}")
+print(result['outline'])       # 大纲
+print(result['costume_design']) # 服装设计
+print(result['scene_design'])   # 场景设计
+print(result['dialogues'])      # 对话历史
+print(result['evaluation'])     # 评估报告
 ```
 
 ### 命令行运行
 
 ```bash
-# 运行示例
-cd h:/pythonwork/project/extract
-python -m src.script_generation.main
+# 交互式
+python main.py
+
+# 直接指定需求
+python main.py "请创作一出诸葛亮和孙悟空的京剧"
 ```
 
-## 输出文件
-
-生成的文件保存在 `generated_scripts/` 目录：
-
-1. **{剧名}_剧本.txt** - 格式化的完整剧本
-2. **{剧名}_大纲.json** - 剧本大纲（JSON格式）
-3. **{剧名}_对话历史.json** - 完整对话历史（JSON格式）
-
-## 剧本格式示例
-
-```
-╔══════════════════════════════════════════════════════════════╗
-║                        京剧剧本                              ║
-╚══════════════════════════════════════════════════════════════╝
-
-剧名：煮酒论英雄
-主题：智慧与勇武的对话
-创作时间：2025年11月11日 16:00
-
-═══════════════════════════════════════════════════════════════
-
-【角色表】
-• 诸葛亮（智者）：蜀汉丞相，智谋超群
-• 孙悟空（英雄）：齐天大圣，神通广大
-
-═══════════════════════════════════════════════════════════════
-
-【第1场】
-────────────────────────────────────────────────────────────
-
-〔场景〕丞相府内，夜色深沉
-〔说明〕诸葛亮与孙悟空对坐，煮酒论天下
-
-诸葛亮【沉思】：
-    【念】今夜月明星稀，正是论英雄之时...
-
-孙悟空【豪迈】：
-    〔拱手作揖〕
-    【念】俺老孙虽是山野之猴，却也知天下大势...
-
-═══════════════════════════════════════════════════════════════
-
-【剧终】
-```
-
-## 配置说明
-
-### 环境变量
-
-系统使用 `src/config.py` 中的配置：
-
-```python
-OPENAI_API_KEY = "your-api-key"
-OPENAI_API_BASE = "https://api.openai.com/v1"
-MODEL_NAME = "gpt-4"
-```
-
-### 参数调整
-
-- `max_scenes`: 最大场景数（默认3）
-- `max_rounds_per_scene`: 每场景最大对话轮数（默认10）
-- `temperature`: LLM温度参数（在各Agent中可调整）
+---
 
 ## 依赖项
 
 ```
-langchain
-langchain-openai
+crewai
+crewai-tools
+openai
 faiss-cpu
 numpy
 ```
 
-## 注意事项
-
-1. **API密钥**：确保在 `src/config.py` 中配置了有效的OpenAI API密钥
-2. **数据准备**：需要先运行目标1和目标2，生成角色数据和向量索引
-3. **角色识别**：用户需求中必须包含已有的角色名称（如"诸葛亮"、"孙悟空"）
-4. **生成时间**：根据场景数和对话轮数，生成可能需要几分钟
-5. **成本控制**：每次生成会调用多次LLM API，注意控制成本
-
-## 扩展开发
-
-### 添加新Agent类型
-
-1. 继承 `AgentBase` 类
-2. 实现特定的系统提示
-3. 添加专属方法
-4. 在 `main.py` 中集成
-
-### 自定义输出格式
-
-修改 `script_formatter.py` 中的模板和格式化方法。
-
-### 调整对话策略
-
-修改 `director_agent.py` 中的决策逻辑。
-
-## 故障排除
-
-### 常见问题
-
-1. **角色未识别**
-   - 检查角色名称是否在 `character/` 目录中存在
-   - 确保用户需求中包含完整的角色名称
-
-2. **API调用失败**
-   - 检查API密钥是否正确
-   - 检查网络连接
-   - 查看API配额是否充足
-
-3. **生成内容不符合预期**
-   - 调整各Agent的系统提示
-   - 增加RAG检索的相关片段数量
-   - 调整temperature参数
-
-4. **向量索引加载失败**
-   - 确保已运行目标2生成向量索引
-   - 检查 `vector_index/` 目录是否存在
+---
 
 ## 版本历史
 
-- v1.0 (2025-11-11): 初始版本，实现多Agent协作剧本生成
-
-## 作者
-
-京剧剧本生成项目团队
+- **v2.0** (2025-03): 重构为 CrewAI 架构，新增 Tool 层、双层记忆系统、编剧审查机制、演员自审机制
+- **v1.0** (2025-11): 初始版本，自研多Agent协作剧本生成
