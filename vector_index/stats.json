@@ -1,0 +1,16 @@
+{
+  "total": 812,
+  "dimension": 1536,
+  "type_distribution": {
+    "plot_summary": 55,
+    "character_profile": 217,
+    "dialogue": 133,
+    "singing": 242,
+    "performance": 165
+  },
+  "character_distribution": {
+    "孙悟空": 212,
+    "诸葛亮": 309,
+    "赵匡胤": 291
+  }
+}

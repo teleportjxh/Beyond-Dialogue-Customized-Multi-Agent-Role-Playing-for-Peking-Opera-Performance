@@ -1,0 +1,83 @@
+{
+  "test_info": {
+    "timestamp": "2026-03-24 19:21:03",
+    "mode": "quick",
+    "command": "python scripts/evaluation/run_rag_evaluation.py --mode quick",
+    "description": "单元模块验证，不依赖向量索引"
+  },
+  "query_rewriter": {
+    "description": "Query 改写/扩展模块测试",
+    "test_cases": [
+      {
+        "original": "猴子打妖怪",
+        "rewritten": ["猴子打妖怪", "猴子(孙悟空)打妖怪", "猴子与妖怪的战斗武打场面"],
+        "strategies": ["同义词还原", "意图补全"]
+      },
+      {
+        "original": "孔明怎么打仗",
+        "rewritten": ["孔明(诸葛亮)怎么打仗", "孔明怎么打仗", "孔明的战斗场面和军事谋略"],
+        "strategies": ["缩写还原", "意图补全"]
+      },
+      {
+        "original": "大圣的故事",
+        "rewritten": ["大圣的故事", "大圣(孙悟空)的故事", "大圣的剧情大纲和场景"],
+        "strategies": ["同义词还原", "意图补全"]
+      },
+      {
+        "original": "孙悟空的脸谱和服装",
+        "rewritten": ["服装", "孙悟空 服饰装扮", "孙悟空的脸谱和服装", "孙悟空 脸谱妆容", "孙悟空的脸谱"],
+        "strategies": ["子问题拆解"]
+      },
+      {
+        "original": "西皮二六板唱腔",
+        "rewritten": ["西皮二六板唱腔", "西皮(西皮唱腔)二六板唱腔"],
+        "strategies": ["术语缩写还原"]
+      }
+    ]
+  },
+  "bm25_retriever": {
+    "description": "BM25 稀疏检索测试",
+    "test_documents": [
+      {"id": "doc_0", "text": "孙悟空大闹天宫，与天兵天将大战", "title": "安天会"},
+      {"id": "doc_1", "text": "诸葛亮在空城上弹琴退敌", "title": "空城计"},
+      {"id": "doc_2", "text": "孙悟空三借芭蕉扇，与铁扇公主斗法", "title": "芭蕉扇"},
+      {"id": "doc_3", "text": "刘备三顾茅庐请诸葛亮出山", "title": "三顾茅庐"},
+      {"id": "doc_4", "text": "京剧武生表演翻跟头打把子", "title": "武打表演"}
+    ],
+    "query": "孙悟空打妖怪",
+    "top_k": 3,
+    "results": [
+      {"rank": 1, "id": "doc_2", "bm25_score": 1.0943, "text": "孙悟空三借芭蕉扇，与铁扇公主斗法", "relevant": true},
+      {"rank": 2, "id": "doc_4", "bm25_score": 1.0926, "text": "京剧武生表演翻跟头打把子", "relevant": false},
+      {"rank": 3, "id": "doc_0", "bm25_score": 0.8338, "text": "孙悟空大闹天宫，与天兵天将大战", "relevant": true}
+    ]
+  },
+  "crossencoder_reranker": {
+    "description": "CrossEncoder 重排测试",
+    "query": "诸葛亮用计谋",
+    "input_documents": "同 bm25_retriever.test_documents",
+    "top_k": 3,
+    "results": [
+      {"rank": 1, "id": "doc_3", "rerank_score": 0.3370, "text": "刘备三顾茅庐请诸葛亮出山", "relevant": true},
+      {"rank": 2, "id": "doc_1", "rerank_score": 0.3360, "text": "诸葛亮在空城上弹琴退敌", "relevant": true},
+      {"rank": 3, "id": "doc_2", "rerank_score": 0.0160, "text": "孙悟空三借芭蕉扇，与铁扇公主斗法", "relevant": false}
+    ]
+  },
+  "evaluation_metrics": {
+    "description": "评估指标计算验证",
+    "setup": {
+      "retrieved_ids": ["doc_0", "doc_3", "doc_1", "doc_4", "doc_2"],
+      "relevant_ids": ["doc_0", "doc_2", "doc_5"]
+    },
+    "results": {
+      "3": {"recall": 0.3333, "precision": 0.3333, "ndcg": 0.4693},
+      "5": {"recall": 0.6667, "precision": 0.4000, "ndcg": 0.6508}
+    }
+  },
+  "module_status": {
+    "query_rewriter": "PASS",
+    "bm25_retriever": "PASS",
+    "crossencoder_reranker": "PASS",
+    "evaluation_metrics": "PASS"
+  }
+}

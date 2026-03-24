@@ -1,8 +1,11 @@
 """
-向量化处理器 - 负责从enhanced_script文本文件中提取数据并转换为向量表示
+向量化处理器 - 多级语义切分策略
+类型: plot_summary, character_profile, dialogue, performance
 """
 import os
 import re
+import json
+import numpy as np
 from pathlib import Path
 from typing import List, Dict, Any
 from langchain_openai import OpenAIEmbeddings
@@ -10,319 +13,275 @@ from ..config import Config
 
 
 class VectorProcessor:
-    """向量化处理器类 - 直接从enhanced_script提取数据"""
-    
+    MIN_CHUNK = 150
+    MAX_CHUNK = 1200
+    OVERLAP = 80
+
     def __init__(self):
-        """初始化向量处理器"""
         self.embeddings = OpenAIEmbeddings(
             model="text-embedding-3-small",
             openai_api_key=Config.API_KEY,
             openai_api_base=Config.BASE_URL
         )
         self.enhanced_script_path = Config.ENHANCED_SCRIPT_PATH
-        
-    def clean_script_content(self, content: str) -> str:
-        """
-        清洗剧本内容，移除AI生成时的提示词和无关内容
-        
-        Args:
-            content: 原始剧本内容
-            
-        Returns:
-            清洗后的剧本内容
-        """
-        # 移除文件开头的AI提示词
-        # 常见模式：以"好的"、"遵照"等开头的提示词
-        prompt_patterns = [
-            r'^好的[，,].*?(?=###|\*\*\*|剧目：|剧情大纲)',
-            r'^遵照.*?(?=###|\*\*\*|剧目：|剧情大纲)',
-            r'^根据.*?(?=###|\*\*\*|剧目：|剧情大纲)',
-            r'^按照.*?(?=###|\*\*\*|剧目：|剧情大纲)',
-        ]
-        
-        for pattern in prompt_patterns:
-            content = re.sub(pattern, '', content, flags=re.DOTALL | re.MULTILINE)
-        
-        # 移除分隔符行（如 *** 或 --- 等）
-        content = re.sub(r'^\s*[\*\-=]{3,}\s*$', '', content, flags=re.MULTILINE)
-        
-        # 查找剧本真正的开始位置
-        # 优先从"### **剧目："或"#### **剧情大纲**"开始
-        start_markers = [
-            r'###\s*\*\*剧目[：:]',
-            r'####\s*\*\*剧情大纲\*\*',
-            r'###\s*剧目[：:]',
-            r'##\s*剧情大纲',
-        ]
-        
-        start_pos = -1
-        for marker in start_markers:
-            match = re.search(marker, content)
-            if match:
-                start_pos = match.start()
-                break
-        
-        # 如果找到标记，从该位置开始截取
-        if start_pos > 0:
-            content = content[start_pos:]
-        
-        # 移除多余的空行（连续3个以上空行压缩为2个）
-        content = re.sub(r'\n{4,}', '\n\n\n', content)
-        
-        # 移除首尾空白
-        content = content.strip()
-        
-        return content
-    
-    def parse_script_file(self, file_path: str) -> Dict[str, Any]:
-        """
-        解析单个剧本文件
-        
-        Args:
-            file_path: 剧本文件路径
-            
-        Returns:
-            包含剧本结构化数据的字典
-        """
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # 清洗剧本内容
-            content = self.clean_script_content(content)
-            
-            # 从文件路径提取元数据
-            path_obj = Path(file_path)
-            character_name = path_obj.parent.name
-            filename = path_obj.stem
-            
-            # 从文件名提取剧本ID和名称
-            # 格式: 01019004_舌战群儒_enhanced_script
-            filename = filename.replace('_enhanced_script', '')
-            parts = filename.split('_', 1)
-            script_id = parts[0] if len(parts) > 0 else "unknown"
-            script_name = parts[1] if len(parts) > 1 else "unknown"
-            
-            return {
-                'character_name': character_name,
-                'script_id': script_id,
-                'script_name': script_name,
-                'content': content,
-                'file_path': file_path
-            }
-            
-        except Exception as e:
-            print(f"解析文件 {file_path} 失败: {str(e)}")
-            return None
-    
-    def extract_scenes(self, script_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        从剧本中提取场景分段
-        
-        Args:
-            script_data: 剧本数据字典
-            
-        Returns:
-            场景列表，每个场景包含文本和元数据
-        """
-        content = script_data['content']
-        character_name = script_data['character_name']
-        script_id = script_data['script_id']
-        script_name = script_data['script_name']
-        
-        scenes = []
-        
-        # 使用正则表达式分割场景
-        scene_pattern = r'【第[一二三四五六七八九十百]+[场幕]】'
-        scene_splits = re.split(f'({scene_pattern})', content)
-        
-        # 提取剧情大纲（在第一个场景之前的内容）
-        if len(scene_splits) > 0 and not re.match(scene_pattern, scene_splits[0]):
-            outline = scene_splits[0].strip()
-            if outline and len(outline) > 50:
-                scenes.append({
-                    'text': outline,
-                    'metadata': {
-                        'character_name': character_name,
-                        'script_id': script_id,
-                        'script_name': script_name,
-                        'scene_number': 0,
-                        'scene_name': '剧情大纲',
-                        'type': 'outline'
-                    }
-                })
-        
-        # 处理各个场景
-        current_scene_name = None
-        current_scene_content = []
-        scene_number = 0
-        
-        for i, part in enumerate(scene_splits[1:], 1):
-            if re.match(scene_pattern, part):
-                # 保存上一个场景
-                if current_scene_name and current_scene_content:
-                    scene_text = '\n'.join(current_scene_content).strip()
-                    if scene_text:
-                        scenes.append({
-                            'text': scene_text,
-                            'metadata': {
-                                'character_name': character_name,
-                                'script_id': script_id,
-                                'script_name': script_name,
-                                'scene_number': scene_number,
-                                'scene_name': current_scene_name,
-                                'type': 'scene'
-                            }
-                        })
-                
-                # 开始新场景
-                current_scene_name = part.strip('【】')
-                current_scene_content = [part]
-                scene_number += 1
-            else:
-                # 累积场景内容
-                if part.strip():
-                    current_scene_content.append(part)
-        
-        # 保存最后一个场景
-        if current_scene_name and current_scene_content:
-            scene_text = '\n'.join(current_scene_content).strip()
-            if scene_text:
-                scenes.append({
-                    'text': scene_text,
-                    'metadata': {
-                        'character_name': character_name,
-                        'script_id': script_id,
-                        'script_name': script_name,
-                        'scene_number': scene_number,
-                        'scene_name': current_scene_name,
-                        'type': 'scene'
-                    }
-                })
-        
-        # 如果没有找到场景分段，将整个剧本作为一个单元
-        if len(scenes) == 0:
-            scenes.append({
-                'text': content.strip(),
-                'metadata': {
-                    'character_name': character_name,
-                    'script_id': script_id,
-                    'script_name': script_name,
-                    'scene_number': 1,
-                    'scene_name': '完整剧本',
-                    'type': 'full_script'
-                }
-            })
-        
-        return scenes
-    
-    def process_enhanced_scripts(self) -> List[Dict[str, Any]]:
-        """
-        处理enhanced_script目录下的所有剧本文件
-        
-        Returns:
-            所有场景的文档列表
-        """
-        all_documents = []
-        script_dir = Path(self.enhanced_script_path)
-        
-        if not script_dir.exists():
-            print(f"错误: 目录不存在: {self.enhanced_script_path}")
-            return all_documents
-        
-        # 遍历所有角色目录
-        character_dirs = [d for d in script_dir.iterdir() if d.is_dir()]
-        print(f"找到 {len(character_dirs)} 个角色目录")
-        
-        doc_id = 0
-        for character_dir in character_dirs:
-            character_name = character_dir.name
-            print(f"\n处理角色: {character_name}")
-            
-            # 遍历该角色的所有剧本文件
-            script_files = list(character_dir.glob("*_enhanced_script.txt"))
-            print(f"  找到 {len(script_files)} 个剧本文件")
-            
-            for script_file in script_files:
-                # 解析剧本文件
-                script_data = self.parse_script_file(str(script_file))
-                if script_data is None:
-                    continue
-                
-                # 提取场景
-                scenes = self.extract_scenes(script_data)
-                print(f"    {script_data['script_name']}: 提取 {len(scenes)} 个场景")
-                
-                # 转换为文档格式
-                for scene in scenes:
-                    doc = {
-                        "id": f"doc_{doc_id}",
-                        "character": scene['metadata']['character_name'],
-                        "title": scene['metadata']['script_name'],
-                        "script_id": scene['metadata']['script_id'],
-                        "type": scene['metadata']['type'],
-                        "text": scene['text'],
-                        "metadata": scene['metadata']
-                    }
-                    all_documents.append(doc)
-                    doc_id += 1
-        
-        print(f"\n总共提取了 {len(all_documents)} 个文档片段")
-        return all_documents
-    
-    def vectorize_documents(self, documents: List[Dict[str, Any]], batch_size: int = 50) -> List[Dict[str, Any]]:
-        """
-        批量向量化文档
-        
-        Args:
-            documents: 文档列表
-            batch_size: 批处理大小
-            
-        Returns:
-            包含向量的文档列表
-        """
-        print(f"\n开始向量化 {len(documents)} 个文档...")
-        
-        vectorized_docs = []
-        
-        # 批量处理
-        for i in range(0, len(documents), batch_size):
-            batch = documents[i:i + batch_size]
-            texts = [doc["text"] for doc in batch]
-            
-            try:
-                # 调用Embedding API
-                embeddings = self.embeddings.embed_documents(texts)
-                
-                # 将向量添加到文档中
-                for doc, embedding in zip(batch, embeddings):
-                    doc["embedding"] = embedding
-                    vectorized_docs.append(doc)
-                
-                print(f"  - 已处理 {len(vectorized_docs)}/{len(documents)} 个文档")
-                
-            except Exception as e:
-                print(f"向量化批次失败: {str(e)}")
+
+    def process_all(self) -> List[Dict[str, Any]]:
+        """处理所有enhanced_script文件，返回文档列表"""
+        all_docs = []
+        base = Path(self.enhanced_script_path)
+        if not base.exists():
+            print(f"路径不存在: {base}")
+            return all_docs
+        for char_dir in sorted(base.iterdir()):
+            if not char_dir.is_dir():
                 continue
-        
-        print(f"向量化完成，成功处理 {len(vectorized_docs)} 个文档")
-        return vectorized_docs
-    
-    def process_all_characters(self) -> List[Dict[str, Any]]:
-        """
-        处理所有角色的数据（主入口方法）
-        
-        Returns:
-            所有角色的向量化文档列表
-        """
-        # 从enhanced_script提取所有文档
-        all_documents = self.process_enhanced_scripts()
-        
-        if len(all_documents) == 0:
-            print("警告: 没有提取到任何文档")
+            char_name = char_dir.name
+            for f in sorted(char_dir.glob("*_enhanced_script.txt")):
+                docs = self._process_file(str(f), char_name)
+                all_docs.extend(docs)
+        print(f"共生成 {len(all_docs)} 个文档块")
+        return all_docs
+
+    def _process_file(self, fpath: str, char_name: str) -> List[Dict]:
+        try:
+            with open(fpath, "r", encoding="utf-8") as f:
+                raw = f.read()
+        except Exception as e:
+            print(f"读取失败 {fpath}: {e}")
             return []
-        
-        # 批量向量化
-        vectorized_docs = self.vectorize_documents(all_documents)
-        
-        return vectorized_docs
+        content = self._clean(raw)
+        fn = Path(fpath).stem.replace("_enhanced_script", "")
+        parts = fn.split("_", 1)
+        sid = parts[0] if parts else "unknown"
+        sname = parts[1] if len(parts) > 1 else "unknown"
+        base_meta = {"character_name": char_name, "script_id": sid, "script_name": sname}
+        docs = []
+        # 1) 剧情大纲
+        summary = self._extract_summary(content)
+        if summary:
+            for i, chunk in enumerate(self._smart_split(summary)):
+                docs.append(self._make_doc(chunk, "plot_summary", base_meta, scene_number=0, extra={"chunk_index": i}))
+        # 2) 角色描述
+        profiles = self._extract_profiles(content)
+        for p in profiles:
+            for i, chunk in enumerate(self._smart_split(p["text"])):
+                docs.append(self._make_doc(chunk, "character_profile", base_meta, scene_number=0,
+                                           extra={"role_name": p["name"], "chunk_index": i}))
+        # 3) 场景
+        scenes = self._extract_scenes(content)
+        for sc in scenes:
+            scene_chunks = self._split_scene(sc["text"])
+            for i, chunk_text in enumerate(scene_chunks):
+                doc_type = self._classify_chunk(chunk_text)
+                docs.append(self._make_doc(chunk_text, doc_type, base_meta,
+                                           scene_number=sc["num"], scene_name=sc["name"],
+                                           extra={"chunk_index": i}))
+        return docs
+
+    def _make_doc(self, text, doc_type, base_meta, scene_number=0, scene_name="", extra=None):
+        meta = dict(base_meta)
+        meta["type"] = doc_type
+        meta["scene_number"] = scene_number
+        meta["scene_name"] = scene_name
+        if extra:
+            meta.update(extra)
+        return {"text": text, "metadata": meta}
+
+    def _classify_chunk(self, text: str) -> str:
+        dialogue_markers = re.findall(r'\((?:白|唱|念|笑|哭|叫头)\)', text)
+        stage_markers = re.findall(r'\[.*?\]', text)
+        if len(dialogue_markers) >= 2:
+            if any(k in text for k in ["唱", "西皮", "二黄", "摇板", "慢板", "快板", "导板"]):
+                return "singing"
+            return "dialogue"
+        if len(stage_markers) >= 3:
+            return "performance"
+        return "dialogue"
+
+    def _clean(self, content: str) -> str:
+        for pat in [r'^好的[，,].*?(?=###|\*\*\*|剧目|剧情)', r'^遵照.*?(?=###|\*\*\*|剧目|剧情)',
+                    r'^根据.*?(?=###|\*\*\*|剧目|剧情)', r'^按照.*?(?=###|\*\*\*|剧目|剧情)']:
+            content = re.sub(pat, '', content, flags=re.DOTALL | re.MULTILINE)
+        content = re.sub(r'^\s*[\*\-=]{3,}\s*$', '', content, flags=re.MULTILINE)
+        for marker in [r'###\s*\*\*《', r'###\s*\*\*剧目', r'\*\*剧情大纲\*\*', r'###\s*剧目']:
+            m = re.search(marker, content)
+            if m and m.start() > 0:
+                content = content[m.start():]
+                break
+        return content.strip()
+
+    def _extract_summary(self, content: str) -> str:
+        for pat in [
+            r'(?:\*\*)?剧情大纲(?:\*\*)?[：:\n](.*?)(?=(?:\*\*)?出场人物|###\s*\*\*出场)',
+            r'(?:\*\*)?剧情大纲(?:\*\*)?[：:\n](.*?)(?=\n#{2,})',
+        ]:
+            m = re.search(pat, content, re.DOTALL)
+            if m:
+                t = re.sub(r'[*#]+', '', m.group(1)).strip()
+                if len(t) > 50:
+                    return t
+        return ""
+
+    def _extract_profiles(self, content: str) -> List[Dict]:
+        profiles = []
+        for pat in [
+            r'出场人物及脸谱.*?[：:\n](.*?)(?=###\s*(?:\*\*)?(?:正文|【第)|####\s*(?:\*\*)?第|### \*\*正文)',
+            r'出场人物.*?[：:\n](.*?)(?=###\s*(?:\*\*)?(?:正文|【第)|####\s*(?:\*\*)?第)',
+        ]:
+            m = re.search(pat, content, re.DOTALL)
+            if m:
+                char_text = m.group(1)
+                char_positions = [(x.start(), x.group(1).strip())
+                                  for x in re.finditer(r'\d+[.．]\s*\*\*([^*]+)\*\*', char_text)]
+                for i, (pos, name) in enumerate(char_positions):
+                    end = char_positions[i+1][0] if i+1 < len(char_positions) else len(char_text)
+                    t = re.sub(r'[*]+', '', char_text[pos:end]).strip()
+                    if len(t) > 30:
+                        profiles.append({"name": name, "text": t})
+                break
+        return profiles
+
+    def _extract_scenes(self, content: str) -> List[Dict]:
+        scenes = []
+        pat = r'(【第[一二三四五六七八九十百]+[场幕]】|(?:####?\s*(?:\*\*)?)?第[一二三四五六七八九十百\d]+场)'
+        splits = re.split(pat, content)
+        cur_name = None
+        cur_parts = []
+        num = 0
+        for part in splits:
+            if re.match(pat, part):
+                if cur_name and cur_parts:
+                    t = "\n".join(cur_parts).strip()
+                    if len(t) > 30:
+                        scenes.append({"num": num, "name": cur_name, "text": t})
+                cur_name = re.sub(r'[【】*# ]', '', part).strip()
+                cur_parts = [part]
+                num += 1
+            elif part.strip():
+                cur_parts.append(part)
+        if cur_name and cur_parts:
+            t = "\n".join(cur_parts).strip()
+            if len(t) > 30:
+                scenes.append({"num": num, "name": cur_name, "text": t})
+        return scenes
+
+    def _split_scene(self, text: str) -> List[str]:
+        if len(text) <= self.MAX_CHUNK:
+            return [text]
+        return self._smart_split(text)
+
+    def _smart_split(self, text: str) -> List[str]:
+        if len(text) <= self.MAX_CHUNK:
+            return [text]
+        chunks = []
+        paras = re.split(r'\n\s*\n', text)
+        cur = ""
+        for p in paras:
+            p = p.strip()
+            if not p:
+                continue
+            if len(p) > self.MAX_CHUNK:
+                if cur and len(cur) >= self.MIN_CHUNK:
+                    chunks.append(cur.strip())
+                    cur = ""
+                sents = re.split(r'(?<=[。！？\n])', p)
+                for s in sents:
+                    s = s.strip()
+                    if not s:
+                        continue
+                    if len(cur) + len(s) > self.MAX_CHUNK:
+                        if cur and len(cur) >= self.MIN_CHUNK:
+                            chunks.append(cur.strip())
+                            overlap = cur[-self.OVERLAP:] if len(cur) > self.OVERLAP else cur
+                            cur = overlap + "\n" + s
+                        else:
+                            cur = (cur + "\n" + s) if cur else s
+                    else:
+                        cur = (cur + "\n" + s) if cur else s
+            else:
+                if len(cur) + len(p) + 1 > self.MAX_CHUNK:
+                    if cur and len(cur) >= self.MIN_CHUNK:
+                        chunks.append(cur.strip())
+                        overlap = cur[-self.OVERLAP:] if len(cur) > self.OVERLAP else cur
+                        cur = overlap + "\n" + p
+                    else:
+                        cur = (cur + "\n\n" + p) if cur else p
+                else:
+                    cur = (cur + "\n\n" + p) if cur else p
+        if cur and len(cur) >= self.MIN_CHUNK:
+            chunks.append(cur.strip())
+        elif cur and chunks:
+            chunks[-1] = chunks[-1] + "\n\n" + cur.strip()
+        elif cur:
+            chunks.append(cur.strip())
+        return chunks if chunks else [text]
+
+    def build_vector_index(self, output_dir: str = "vector_index") -> Dict[str, Any]:
+        """构建向量索引"""
+        os.makedirs(output_dir, exist_ok=True)
+        docs = self.process_all()
+        if not docs:
+            print("没有文档可处理")
+            return {"total": 0}
+        # 分配ID
+        for i, doc in enumerate(docs):
+            doc["id"] = f"doc_{i}"
+        # 生成embedding
+        texts = [d["text"] for d in docs]
+        print(f"正在为 {len(texts)} 个文档生成向量...")
+        batch_size = 100
+        all_embeddings = []
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i+batch_size]
+            embs = self.embeddings.embed_documents(batch)
+            all_embeddings.extend(embs)
+            print(f"  已处理 {min(i+batch_size, len(texts))}/{len(texts)}")
+        # 保存
+        import faiss
+        dim = len(all_embeddings[0])
+        index = faiss.IndexFlatIP(dim)
+        vectors = np.array(all_embeddings, dtype=np.float32)
+        faiss.normalize_L2(vectors)
+        index.add(vectors)
+        faiss.write_index(index, os.path.join(output_dir, "faiss.index"))
+        # 保存文档（不含向量）
+        save_docs = []
+        for d in docs:
+            save_docs.append({
+                "id": d["id"],
+                "character": d["metadata"]["character_name"],
+                "title": d["metadata"]["script_name"],
+                "script_id": d["metadata"]["script_id"],
+                "type": d["metadata"]["type"],
+                "text": d["text"],
+                "metadata": d["metadata"]
+            })
+        with open(os.path.join(output_dir, "documents.json"), "w", encoding="utf-8") as f:
+            json.dump(save_docs, f, ensure_ascii=False, indent=2)
+        # 统计
+        type_counts = {}
+        char_counts = {}
+        for d in docs:
+            t = d["metadata"]["type"]
+            c = d["metadata"]["character_name"]
+            type_counts[t] = type_counts.get(t, 0) + 1
+            char_counts[c] = char_counts.get(c, 0) + 1
+        stats = {
+            "total": len(docs),
+            "dimension": dim,
+            "type_distribution": type_counts,
+            "character_distribution": char_counts
+        }
+        with open(os.path.join(output_dir, "stats.json"), "w", encoding="utf-8") as f:
+            json.dump(stats, f, ensure_ascii=False, indent=2)
+        print(f"\n向量索引构建完成:")
+        print(f"  总文档数: {len(docs)}")
+        print(f"  向量维度: {dim}")
+        print(f"  类型分布: {type_counts}")
+        print(f"  角色分布: {char_counts}")
+        return stats
+
+
+if __name__ == "__main__":
+    processor = VectorProcessor()
+    processor.build_vector_index()
